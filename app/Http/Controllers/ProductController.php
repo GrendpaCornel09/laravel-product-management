@@ -41,7 +41,7 @@ class ProductController extends Controller
         if($validator->fails()){
             $errors=$validator->errors()->all();
             $errorMessage=implode(', ',$errors);
-            return response()->json($errorMessage);
+            return response()->json([$errorMessage],400);
         }
 
         $products=Product::create($request->all());
@@ -81,7 +81,7 @@ class ProductController extends Controller
         if($validator->fails()){
             $errors=$validator->errors()->all();
             $errorMessage=implode(', ',$errors);
-            return response()->json($errorMessage);
+            return response()->json([$errorMessage],400);
         }
 
         $product=Product::find($id);
