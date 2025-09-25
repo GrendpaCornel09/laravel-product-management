@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Http\Request;
 use illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Validator;
 use ReturnTypeWillChange;
 
 class ProductController extends Controller
@@ -23,11 +26,23 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validated_data=$request->validate([
+        // $validated_data=$request->validate([
+        //     'name'=>'required',
+        //     'price'=>'required|numeric',
+        //     'stock'=>'required|integer',
+        // ]);
+
+        $validator=Validator::make($request->all(),[
             'name'=>'required',
             'price'=>'required|numeric',
-            'stock'=>'required|integer',
+            'stock'=>'required|integer'
         ]);
+
+        if($validator->fails()){
+            $errors=$validator->errors()->all();
+            $errorMessage=implode(', ',$errors);
+            return response()->json($errorMessage);
+        }
 
         $products=Product::create($request->all());
         return response()->json(['products'=>$products]);
@@ -38,7 +53,7 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product=Product::find($id);
+        $product=Product::findOrFail($id);
         if($product){
             return response()->json(['product'=>$product]);
         }else{
@@ -51,17 +66,30 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        $validated_data=$request->validate([
+        // $validated_data=$request->validate([
+        //     'name'=>'required',
+        //     'price'=>'required|numeric',
+        //     'stock'=>'required|integer',
+        // ]);
+
+        $validator=Validator::make($request->all(),[
             'name'=>'required',
             'price'=>'required|numeric',
             'stock'=>'required|integer',
         ]);
+
+        if($validator->fails()){
+            $errors=$validator->errors()->all();
+            $errorMessage=implode(', ',$errors);
+            return response()->json($errorMessage);
+        }
+
         $product=Product::find($id);
         if(!$product){
             return response()->json(['message'=>'Produk tidak ditemukan'],404);
         }
 
-        $product->update($validated_data);
+        $product->update($request->all());
         return response()->json(['message'=>'Produk berhasil diupdate','product'=>$product]);
     }
 
