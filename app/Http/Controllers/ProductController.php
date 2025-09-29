@@ -10,6 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Validator;
 use ReturnTypeWillChange;
 
+$token=['test123'];
+
 class ProductController extends Controller
 {
     /**
