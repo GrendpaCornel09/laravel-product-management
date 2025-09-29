@@ -18,6 +18,9 @@ class ProductController extends Controller
     public function index(): JsonResponse
     {
         $products=Product::all();
+        if(count($products)<1){
+            return response()->json(['Products unavailable'],400);
+        }
         return response()->json(['products'=>$products]);
     }
 
@@ -26,16 +29,20 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        // $validated_data=$request->validate([
-        //     'name'=>'required',
-        //     'price'=>'required|numeric',
-        //     'stock'=>'required|integer',
-        // ]);
-
         $validator=Validator::make($request->all(),[
-            'name'=>'required',
-            'price'=>'required|numeric',
-            'stock'=>'required|integer'
+            'name'=>'required|string|max:50',
+            'price'=>'required|numeric|min:0',
+            'stock'=>'required|integer|min:0'
+        ],[
+            'name.required'=>'Nama produk tidak boleh kosong.',
+            'name.string'=>'Nama produk harus berupa string.',
+            'name.max'=>'Nama produk tidak boleh melebihi 50 karakter.',
+            'price.required'=>'Harga produk tidak boleh kosong.',
+            'price.numeric'=>'Harga produk harus berupa angka.',
+            'price.min'=>'Harga produk tidak boleh negatif',
+            'stock.required'=>'Stok produk tidak boleh kosong.',
+            'stock.integer'=>'Stok produk harus berupa integer.',
+            'stock.min'=>'Stok produk tidak boleh negatif.'
         ]);
 
         if($validator->fails()){
@@ -53,11 +60,11 @@ class ProductController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $product=Product::findOrFail($id);
+        $product=Product::find($id);
         if($product){
             return response()->json(['product'=>$product]);
         }else{
-            return response()->json(['message'=>'Produk tidak ditemukan'],404);
+            return response()->json(['message'=>'Produk tidak ditemukan'],400);
         }
     }
 
@@ -66,16 +73,20 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        // $validated_data=$request->validate([
-        //     'name'=>'required',
-        //     'price'=>'required|numeric',
-        //     'stock'=>'required|integer',
-        // ]);
-
         $validator=Validator::make($request->all(),[
-            'name'=>'required',
-            'price'=>'required|numeric',
-            'stock'=>'required|integer',
+            'name'=>'required|string|max:50',
+            'price'=>'required|numeric|min:0',
+            'stock'=>'required|integer|min:0'
+        ],[
+            'name.required'=>'Nama produk tidak boleh kosong.',
+            'name.string'=>'Nama produk harus berupa string.',
+            'name.max'=>'Nama produk tidak boleh melebihi 50 karakter.',
+            'price.required'=>'Harga produk tidak boleh kosong.',
+            'price.numeric'=>'Harga produk harus berupa angka.',
+            'price.min'=>'Harga produk tidak boleh negatif',
+            'stock.required'=>'Stok produk tidak boleh kosong.',
+            'stock.integer'=>'Stok produk harus berupa integer.',
+            'stock.min'=>'Stok produk tidak boleh negatif.'
         ]);
 
         if($validator->fails()){
